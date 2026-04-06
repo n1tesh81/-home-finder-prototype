@@ -199,7 +199,12 @@ const examplePrompts = [
   '2 bedroom property with a fireplace under £600k',
 ];
 
-const bookingSlots = ['Tue 10:00', 'Tue 14:00', 'Wed 11:00', 'Thu 18:00'];
+const bookingSlots = [
+  'Tue 9 Apr · 10:00',
+  'Tue 9 Apr · 14:00',
+  'Wed 10 Apr · 11:00',
+  'Thu 11 Apr · 18:00',
+];
 
 function normaliseText(input) {
   return input
@@ -357,7 +362,7 @@ function rankProperties(prompt) {
       return {
         ...property,
         score,
-        matchPercentage: Math.min(100, score),
+        matchPercentage: Math.min(92, Math.max(62, score)),
         reasons,
       };
     })
