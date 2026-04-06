@@ -289,34 +289,57 @@ function parsePrompt(prompt) {
 
 function rankProperties(prompt) {
   const criteria = parsePrompt(prompt);
-  const hasCriteria = Object.values(criteria.features).some(Boolean)
-    || Boolean(criteria.bedrooms || criteria.maxPrice || criteria.location || criteria.propertyType);
+  const hasCriteria =
+    Object.values(criteria.features).some(Boolean) ||
+    Boolean(
+      criteria.bedrooms ||
+        criteria.maxPrice ||
+        criteria.location ||
+        criteria.propertyType
+    );
 
-  return properties
+  const results = properties
     .filter((property) => {
-      if (criteria.bedrooms !== null && property.bedrooms !== criteria.bedrooms) return false;
-      if (criteria.maxPrice !== null && property.price > criteria.maxPrice) return false;
-      if (criteria.location && criteria.location !== 'london' && !property.location.toLowerCase().includes(criteria.location)) return false;
-      if (criteria.propertyType && property.propertyType !== criteria.propertyType) return false;
+      if (criteria.bedrooms !== null && property.bedrooms !== criteria.bedrooms) {
+        return false;
+      }
+
+      if (criteria.maxPrice !== null && property.price > criteria.maxPrice) {
+        return false;
+      }
+
+      if (
+        criteria.location &&
+        criteria.location !== "london" &&
+        !property.location.toLowerCase().includes(criteria.location)
+      ) {
+        return false;
+      }
+
+      if (criteria.propertyType && property.propertyType !== criteria.propertyType) {
+        return false;
+      }
 
       for (const [feature, required] of Object.entries(criteria.features)) {
-        if (required && !property[feature]) return false;
+        if (required && !property[feature]) {
+          return false;
+        }
       }
 
       return true;
     })
     .map((property) => {
+      let score = 0;
+      const reasons = [];
+
       if (!hasCriteria) {
         return {
           ...property,
           score: 50,
           matchPercentage: 50,
-          reasons: ['Trending property'],
+          reasons: ["Trending property"],
         };
       }
-
-      let score = 0;
-      const reasons = [];
 
       if (criteria.bedrooms !== null && property.bedrooms === criteria.bedrooms) {
         score += 30;
@@ -325,13 +348,36 @@ function rankProperties(prompt) {
 
       if (criteria.maxPrice !== null && property.price <= criteria.maxPrice) {
         score += 25;
-        reasons.push('Within budget');
+        reasons.push("Within budget");
+
+        // Better ranking when multiple properties are all within budget
+        if (criteria.targetPrice !== null) {
+          const distancePct =
+            (Math.abs(property.price - criteria.targetPrice) / criteria.targetPrice) * 100;
+
+          const closenessBonus = Math.max(0, 5 - Math.round(distancePct));
+          score += closenessBonus;
+
+          if (closenessBonus >= 2) {
+            reasons.push("Close to target budget");
+          }
+        } else {
+          const headroomPct =
+            ((criteria.maxPrice - property.price) / criteria.maxPrice) * 100;
+
+          const budgetBonus = Math.max(0, Math.min(5, Math.round(headroomPct)));
+          score += budgetBonus;
+
+          if (budgetBonus >= 2) {
+            reasons.push("More room within budget");
+          }
+        }
       }
 
       if (criteria.location) {
-        if (criteria.location === 'london') {
+        if (criteria.location === "london") {
           score += 10;
-          reasons.push('In London');
+          reasons.push("In London");
         } else if (property.location.toLowerCase().includes(criteria.location)) {
           score += 20;
           reasons.push(`In ${property.location}`);
@@ -340,22 +386,31 @@ function rankProperties(prompt) {
 
       if (criteria.propertyType && property.propertyType === criteria.propertyType) {
         score += 10;
-        reasons.push(`${property.propertyType === 'flat' ? 'Flat' : 'House'} matches requested type`);
+        reasons.push(
+          `${property.propertyType === "flat" ? "Flat" : "House"} matches requested type`
+        );
       }
 
-      const requestedFeatures = Object.entries(criteria.features).filter(([, value]) => value);
-      const featureWeight = requestedFeatures.length > 0 ? Math.floor(15 / requestedFeatures.length) : 0;
+      const requestedFeatures = Object.entries(criteria.features).filter(
+        ([, value]) => value
+      );
+
+      const featureWeight =
+        requestedFeatures.length > 0 ? Math.floor(15 / requestedFeatures.length) : 0;
+
       requestedFeatures.forEach(([feature]) => {
         score += featureWeight;
+
         const labels = {
-          gym: 'Has gym',
-          tube: 'Near tube',
-          fireplace: 'Has fireplace',
-          balcony: 'Has balcony',
-          parking: 'Has parking',
-          garden: 'Has garden',
-          furnished: 'Furnished',
+          gym: "Has gym",
+          tube: "Near tube",
+          fireplace: "Has fireplace",
+          balcony: "Has balcony",
+          parking: "Has parking",
+          garden: "Has garden",
+          furnished: "Furnished",
         };
+
         reasons.push(labels[feature]);
       });
 
@@ -367,8 +422,9 @@ function rankProperties(prompt) {
       };
     })
     .sort((a, b) => b.score - a.score || a.price - b.price);
-}
 
+  return results;
+}
 function formatPrice(value) {
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
