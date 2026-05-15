@@ -157,10 +157,7 @@ function parsePrompt(prompt) {
   const words = text.split(/\s+/).filter(Boolean);
 
   const bedroomsMatch = text.match(/(\d+)\s*bed(?:room)?/);
-
-  const bedrooms = bedroomsMatch
-    ? Number(bedroomsMatch[1])
-    : null;
+  const bedrooms = bedroomsMatch ? Number(bedroomsMatch[1]) : null;
 
   let maxPrice = null;
   let targetPrice = null;
@@ -188,8 +185,7 @@ function parsePrompt(prompt) {
     "london",
   ];
 
-  const location =
-    locationList.find((loc) => text.includes(loc)) || null;
+  const location = locationList.find((loc) => text.includes(loc)) || null;
 
   let propertyType = null;
 
@@ -226,92 +222,44 @@ function rankProperties(prompt) {
         criteria.propertyType
     );
 
-  const results = properties
-    .filter((property) => {
-      if (
-        criteria.bedrooms !== null &&
-        property.bedrooms !== criteria.bedrooms
-      ) {
-        return false;
-      }
+  function evaluateProperty(property, strictMode = true) {
+    let score = 0;
+    const reasons = [];
+    const missing = [];
 
-      if (
-        criteria.maxPrice !== null &&
-        property.price > criteria.maxPrice
-      ) {
-        return false;
-      }
+    if (!hasCriteria) {
+      return {
+        ...property,
+        score: 50,
+        matchPercentage: 50,
+        reasons: ["Trending property"],
+        missing,
+        isCloseMatch: false,
+      };
+    }
 
-      if (
-        criteria.location &&
-        criteria.location !== "london" &&
-        !property.location
-          .toLowerCase()
-          .includes(criteria.location)
-      ) {
-        return false;
-      }
-
-      if (
-        criteria.propertyType &&
-        property.propertyType !== criteria.propertyType
-      ) {
-        return false;
-      }
-
-      for (const [feature, required] of Object.entries(
-        criteria.features
-      )) {
-        if (required && !property[feature]) {
-          return false;
-        }
-      }
-
-      return true;
-    })
-    .map((property) => {
-      let score = 0;
-      const reasons = [];
-
-      if (!hasCriteria) {
-        return {
-          ...property,
-          score: 50,
-          matchPercentage: 50,
-          reasons: ["Trending property"],
-        };
-      }
-
-      if (
-        criteria.bedrooms !== null &&
-        property.bedrooms === criteria.bedrooms
-      ) {
+    if (criteria.bedrooms !== null) {
+      if (property.bedrooms === criteria.bedrooms) {
         score += 30;
-        reasons.push(
-          `${property.bedrooms} bedrooms matches exactly`
-        );
+        reasons.push(`${property.bedrooms} bedrooms matches exactly`);
+      } else {
+        missing.push(`${criteria.bedrooms} bedrooms`);
+        if (strictMode) return null;
       }
+    }
 
-      if (
-        criteria.maxPrice !== null &&
-        property.price <= criteria.maxPrice
-      ) {
+    if (criteria.maxPrice !== null) {
+      if (property.price <= criteria.maxPrice) {
         score += 25;
         reasons.push("Within budget");
 
         if (criteria.targetPrice !== null) {
           const distancePct =
-            (Math.abs(
-              property.price - criteria.targetPrice
-            ) /
+            (Math.abs(property.price - criteria.targetPrice) /
               criteria.targetPrice) *
             100;
 
-          const closenessBonus = Math.max(
-            0,
-            5 - Math.round(distancePct)
-          );
-
+          const closenessBonus = Math.max(0, 5 - Math.round(distancePct));
           score += closenessBonus;
 
           if (closenessBonus >= 2) {
@@ -319,9 +267,7 @@ function rankProperties(prompt) {
           }
         } else {
           const headroomPct =
-            ((criteria.maxPrice - property.price) /
-              criteria.maxPrice) *
-            100;
+            ((criteria.maxPrice - property.price) / criteria.maxPrice) * 100;
 
           const budgetBonus = Math.max(
             0,
@@ -334,75 +280,107 @@ function rankProperties(prompt) {
             reasons.push("More room within budget");
           }
         }
+      } else {
+        missing.push("budget");
+        if (strictMode) return null;
       }
+    }
 
-      if (criteria.location) {
-        if (criteria.location === "london") {
-          score += 10;
-          reasons.push("In London");
-        } else if (
-          property.location
-            .toLowerCase()
-            .includes(criteria.location)
-        ) {
-          score += 20;
-          reasons.push(`In ${property.location}`);
-        }
-      }
-
-      if (
-        criteria.propertyType &&
-        property.propertyType === criteria.propertyType
-      ) {
+    if (criteria.location) {
+      if (criteria.location === "london") {
         score += 10;
+        reasons.push("In London");
+      } else if (property.location.toLowerCase().includes(criteria.location)) {
+        score += 20;
+        reasons.push(`In ${property.location}`);
+      } else {
+        missing.push(criteria.location);
+        if (strictMode) return null;
+      }
+    }
 
+    if (criteria.propertyType) {
+      if (property.propertyType === criteria.propertyType) {
+        score += 10;
         reasons.push(
           `${
-            property.propertyType === "flat"
-              ? "Flat"
-              : "House"
+            property.propertyType === "flat" ? "Flat" : "House"
           } matches requested type`
         );
+      } else {
+        missing.push(criteria.propertyType);
+        if (strictMode) return null;
       }
+    }
 
-      const requestedFeatures = Object.entries(
-        criteria.features
-      ).filter(([, value]) => value);
+    const requestedFeatures = Object.entries(criteria.features).filter(
+      ([, value]) => value
+    );
 
-      const featureWeight =
-        requestedFeatures.length > 0
-          ? Math.floor(15 / requestedFeatures.length)
-          : 0;
+    const featureWeight =
+      requestedFeatures.length > 0
+        ? Math.floor(15 / requestedFeatures.length)
+        : 0;
 
-      requestedFeatures.forEach(([feature]) => {
-        score += featureWeight;
+    requestedFeatures.forEach(([feature]) => {
+      const hasFeature = property[feature];
 
-        const labels = {
-          gym: "Has gym",
-          tube: "Near tube",
-          fireplace: "Has fireplace",
-          balcony: "Has balcony",
-          parking: "Has parking",
-          garden: "Has garden",
-          furnished: "Furnished",
-        };
-
-        reasons.push(labels[feature]);
-      });
-
-      return {
-        ...property,
-        score,
-        matchPercentage: Math.min(
-          92,
-          Math.max(62, score)
-        ),
-        reasons,
+      const missingLabels = {
+        gym: "gym",
+        tube: "near tube",
+        fireplace: "fireplace",
+        balcony: "balcony",
+        parking: "parking",
+        garden: "garden",
+        furnished: "furnished",
       };
-    })
+
+      const reasonLabels = {
+        gym: "Has gym",
+        tube: "Near tube",
+        fireplace: "Has fireplace",
+        balcony: "Has balcony",
+        parking: "Has parking",
+        garden: "Has garden",
+        furnished: "Furnished",
+      };
+
+      if (hasFeature) {
+        score += featureWeight;
+        reasons.push(reasonLabels[feature]);
+      } else {
+        missing.push(missingLabels[feature]);
+        if (strictMode) return null;
+      }
+    });
+
+    return {
+      ...property,
+      score,
+      matchPercentage: Math.min(92, Math.max(45, score)),
+      reasons,
+      missing,
+      isCloseMatch: missing.length > 0,
+    };
+  }
+
+  const exactMatches = properties
+    .map((property) => evaluateProperty(property, true))
+    .filter(Boolean)
     .sort((a, b) => b.score - a.score || a.price - b.price);
 
-  return results;
+  if (exactMatches.length > 0) {
+    return exactMatches;
+  }
+
+  const closeMatches = properties
+    .map((property) => evaluateProperty(property, false))
+    .filter(Boolean)
+    .filter((property) => property.missing.length <= 2)
+    .sort((a, b) => b.score - a.score || a.missing.length - b.missing.length)
+    .slice(0, 4);
+
+  return closeMatches;
 }
 
 function formatPrice(value) {
@@ -435,8 +413,7 @@ function PropertyCard({ property, onClick }) {
             </div>
 
             <div className="text-sm text-gray-600">
-              {property.bedrooms} bed{" "}
-              {property.propertyType} ·{" "}
+              {property.bedrooms} bed {property.propertyType} ·{" "}
               {property.location}
             </div>
           </div>
@@ -449,6 +426,12 @@ function PropertyCard({ property, onClick }) {
         <div className="text-sm text-gray-700 line-clamp-2">
           {property.description}
         </div>
+
+        {property.missing && property.missing.length > 0 ? (
+          <div className="rounded-2xl bg-amber-50 p-3 text-xs text-amber-800">
+            Missing: {property.missing.join(", ")}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -456,24 +439,17 @@ function PropertyCard({ property, onClick }) {
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
-  const [submittedPrompt, setSubmittedPrompt] =
-    useState("");
-  const [selectedProperty, setSelectedProperty] =
-    useState(null);
-  const [selectedSlot, setSelectedSlot] =
-    useState(null);
-  const [bookingConfirmed, setBookingConfirmed] =
-    useState(false);
+  const [submittedPrompt, setSubmittedPrompt] = useState("");
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
 
   const results = useMemo(
     () => rankProperties(submittedPrompt),
     [submittedPrompt]
   );
 
-  const trending = useMemo(
-    () => rankProperties("").slice(0, 4),
-    []
-  );
+  const trending = useMemo(() => rankProperties("").slice(0, 4), []);
 
   const handleSearch = () => {
     setSubmittedPrompt(prompt.trim());
@@ -496,6 +472,10 @@ export default function App() {
               Prompt-first property discovery prototype
             </p>
           </div>
+
+          <div className="bg-gray-100 px-4 py-2 rounded-full text-sm">
+            UK property search demo
+          </div>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -506,8 +486,8 @@ export default function App() {
               </h1>
 
               <p className="text-sm text-gray-600 mt-2">
-                Type naturally. The prototype extracts
-                key criteria and ranks relevant listings.
+                Type naturally. The prototype extracts key criteria and ranks
+                only relevant listings.
               </p>
 
               <div className="flex flex-col md:flex-row gap-3 mt-5">
@@ -516,9 +496,7 @@ export default function App() {
 
                   <input
                     value={prompt}
-                    onChange={(e) =>
-                      setPrompt(e.target.value)
-                    }
+                    onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Try: 1 bed flat in Westminster under £500k"
                     className="w-full h-12 rounded-2xl border border-gray-300 pl-10 pr-4 outline-none"
                   />
@@ -531,39 +509,62 @@ export default function App() {
                   Search
                 </button>
               </div>
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                {[
+                  "1 bed flat in Hyde Park under £600k",
+                  "1 bed flat with gym near tube",
+                  "2 bedroom property with a fireplace under £600k",
+                ].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      setPrompt(item);
+                      setSubmittedPrompt(item);
+                      setSelectedProperty(null);
+                      setSelectedSlot(null);
+                      setBookingConfirmed(false);
+                    }}
+                    className="px-4 py-2 rounded-full border border-gray-200 text-sm hover:bg-gray-50"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <section className="space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-semibold">
-                  {submittedPrompt
-                    ? "Search results"
-                    : "Trending properties"}
+                  {submittedPrompt ? "Search results" : "Trending properties"}
                 </h2>
 
                 {submittedPrompt ? (
                   <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
                     {results.length}{" "}
-                    {results.length === 1
-                      ? "result"
-                      : "results"}
+                    {results.length === 1 ? "result" : "results"}
                   </div>
                 ) : null}
               </div>
 
-              {submittedPrompt &&
-              results.length === 0 ? (
+              {submittedPrompt && results.length === 0 ? (
                 <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 text-sm text-gray-600">
-                  No exact matches found. Try increasing
-                  your budget or removing a feature.
+                  No exact matches found. Try increasing your budget, removing a
+                  feature, or broadening the area.
+                </div>
+              ) : null}
+
+              {submittedPrompt &&
+              results.length > 0 &&
+              results.some((property) => property.isCloseMatch) ? (
+                <div className="bg-gray-50 rounded-3xl border border-gray-200 shadow-sm p-5 text-sm text-gray-700">
+                  No exact matches found. Showing closest options based on your
+                  criteria.
                 </div>
               ) : null}
 
               <div className="grid gap-4 md:grid-cols-2">
-                {(submittedPrompt
-                  ? results
-                  : trending
-                ).map((property) => (
+                {(submittedPrompt ? results : trending).map((property) => (
                   <PropertyCard
                     key={property.id}
                     property={property}
@@ -595,9 +596,7 @@ export default function App() {
                       <div className="flex justify-between items-start gap-3">
                         <div>
                           <div className="text-2xl font-semibold">
-                            {formatPrice(
-                              selectedProperty.price
-                            )}
+                            {formatPrice(selectedProperty.price)}
                           </div>
 
                           <div className="text-sm text-gray-600">
@@ -606,10 +605,7 @@ export default function App() {
                         </div>
 
                         <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                          {
-                            selectedProperty.matchPercentage
-                          }
-                          % match
+                          {selectedProperty.matchPercentage}% match
                         </div>
                       </div>
 
@@ -626,9 +622,7 @@ export default function App() {
 
                         <span className="flex items-center gap-1">
                           <Building2 className="h-4 w-4" />
-                          {
-                            selectedProperty.propertyType
-                          }
+                          {selectedProperty.propertyType}
                         </span>
 
                         <span className="flex items-center gap-1">
@@ -644,17 +638,23 @@ export default function App() {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        {selectedProperty.reasons.map(
-                          (reason) => (
-                            <div
-                              key={reason}
-                              className="bg-gray-100 px-3 py-1 rounded-full text-sm"
-                            >
-                              {reason}
-                            </div>
-                          )
-                        )}
+                        {selectedProperty.reasons.map((reason) => (
+                          <div
+                            key={reason}
+                            className="bg-gray-100 px-3 py-1 rounded-full text-sm"
+                          >
+                            {reason}
+                          </div>
+                        ))}
                       </div>
+
+                      {selectedProperty.missing &&
+                      selectedProperty.missing.length > 0 ? (
+                        <div className="rounded-2xl bg-amber-50 p-3 text-sm text-amber-800 mt-3">
+                          Close match — missing:{" "}
+                          {selectedProperty.missing.join(", ")}
+                        </div>
+                      ) : null}
                     </div>
 
                     <div>
@@ -663,9 +663,7 @@ export default function App() {
                       </div>
 
                       <p className="text-sm leading-6 text-gray-600">
-                        {
-                          selectedProperty.description
-                        }
+                        {selectedProperty.description}
                       </p>
                     </div>
 
@@ -696,19 +694,15 @@ export default function App() {
 
                       <button
                         disabled={!selectedSlot}
-                        onClick={() =>
-                          setBookingConfirmed(true)
-                        }
+                        onClick={() => setBookingConfirmed(true)}
                         className="w-full mt-4 h-12 rounded-2xl bg-black text-white disabled:opacity-50"
                       >
-                        Confirm viewing with{" "}
-                        {selectedProperty.agentName}
+                        Confirm viewing with {selectedProperty.agentName}
                       </button>
 
                       {bookingConfirmed ? (
                         <div className="mt-4 bg-green-50 text-green-700 rounded-2xl p-3 text-sm">
-                          Viewing confirmed for{" "}
-                          {selectedSlot} with{" "}
+                          Viewing confirmed for {selectedSlot} with{" "}
                           {selectedProperty.agentName}.
                         </div>
                       ) : null}
@@ -722,10 +716,32 @@ export default function App() {
                   </div>
 
                   <p className="text-sm text-gray-600 mt-4 leading-6">
-                    Click a property to view details,
-                    understand why it matches your
-                    search, and test the booking flow.
+                    Click a property to view details, understand why it matches
+                    your search, and test the booking flow.
                   </p>
+
+                  <div className="mt-5 rounded-2xl bg-gray-50 p-5 text-sm text-gray-700 leading-6">
+                    <div className="font-semibold text-gray-900 mb-2">
+                      What this prototype proves
+                    </div>
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>
+                        Natural-language prompt search can narrow down property
+                        options quickly
+                      </li>
+                      <li>
+                        Structured attributes make results more reliable
+                      </li>
+                      <li>
+                        AI-style ranking can help users focus on the top few
+                        listings
+                      </li>
+                      <li>
+                        A lightweight prototype is enough to demonstrate the
+                        concept publicly
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>
