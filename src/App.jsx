@@ -1,16 +1,27 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
+import {
+  Home,
+  MapPin,
+  BedDouble,
+  Bath,
+  Search,
+  CalendarDays,
+  Building2,
+} from "lucide-react";
 
 const properties = [
   {
     id: 1,
-    title: 'Contemporary 1 Bed Flat with Gym Access in Westminster',
+    title: "Contemporary 1 Bed Flat with Gym Access in Westminster",
     price: 435000,
     bedrooms: 1,
     bathrooms: 1,
-    propertyType: 'flat',
-    location: 'Westminster',
-    description: 'Stylish one-bedroom flat in Westminster with residents’ gym access and a short walk to the tube.',
-    imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop',
+    propertyType: "flat",
+    location: "Westminster",
+    description:
+      "Stylish one-bedroom flat in Westminster with residents’ gym access and a short walk to the tube.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop",
     gym: true,
     tube: true,
     fireplace: false,
@@ -18,18 +29,20 @@ const properties = [
     parking: false,
     garden: false,
     furnished: true,
-    agentName: 'Sarah Collins',
+    agentName: "Sarah Collins",
   },
   {
     id: 2,
-    title: 'Charming 2 Bed Flat with Fireplace in Notting Hill',
+    title: "Charming 2 Bed Flat with Fireplace in Notting Hill",
     price: 585000,
     bedrooms: 2,
     bathrooms: 1,
-    propertyType: 'flat',
-    location: 'Notting Hill',
-    description: 'Beautiful two-bedroom flat with a traditional fireplace, classic charm and excellent transport links.',
-    imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200&h=800&fit=crop',
+    propertyType: "flat",
+    location: "Notting Hill",
+    description:
+      "Beautiful two-bedroom flat with a traditional fireplace and excellent transport links.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=1200&h=800&fit=crop",
     gym: false,
     tube: true,
     fireplace: true,
@@ -37,18 +50,20 @@ const properties = [
     parking: false,
     garden: false,
     furnished: false,
-    agentName: 'Oliver Reed',
+    agentName: "Oliver Reed",
   },
   {
     id: 3,
-    title: 'Spacious 2 Bed Flat with Balcony in Canary Wharf',
+    title: "Spacious 2 Bed Flat with Balcony in Canary Wharf",
     price: 610000,
     bedrooms: 2,
     bathrooms: 2,
-    propertyType: 'flat',
-    location: 'Canary Wharf',
-    description: 'Modern two-bedroom flat with a private balcony and strong city connections for commuting professionals.',
-    imageUrl: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&h=800&fit=crop',
+    propertyType: "flat",
+    location: "Canary Wharf",
+    description:
+      "Modern two-bedroom flat with a private balcony and strong city connections.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1200&h=800&fit=crop",
     gym: true,
     tube: true,
     fireplace: false,
@@ -56,18 +71,20 @@ const properties = [
     parking: false,
     garden: false,
     furnished: true,
-    agentName: 'Maya Shah',
+    agentName: "Maya Shah",
   },
   {
     id: 4,
-    title: 'Cozy 1 Bed Flat Near Hyde Park with Great Transport Links',
+    title: "Cozy 1 Bed Flat Near Hyde Park",
     price: 390000,
     bedrooms: 1,
     bathrooms: 1,
-    propertyType: 'flat',
-    location: 'Hyde Park',
-    description: 'Comfortable one-bedroom flat near Hyde Park with strong transport links and a quieter residential setting.',
-    imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop',
+    propertyType: "flat",
+    location: "Hyde Park",
+    description:
+      "Comfortable one-bedroom flat near Hyde Park with strong transport links.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1200&h=800&fit=crop",
     gym: false,
     tube: true,
     fireplace: false,
@@ -75,37 +92,20 @@ const properties = [
     parking: false,
     garden: false,
     furnished: true,
-    agentName: 'Daniel Foster',
+    agentName: "Daniel Foster",
   },
   {
     id: 5,
-    title: 'Modern 3 Bed House with Garden and Parking in Clapham',
-    price: 745000,
-    bedrooms: 3,
-    bathrooms: 2,
-    propertyType: 'house',
-    location: 'Clapham',
-    description: 'Spacious family home with private garden and off-street parking close to parks and transport.',
-    imageUrl: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&h=800&fit=crop',
-    gym: false,
-    tube: true,
-    fireplace: true,
-    balcony: false,
-    parking: true,
-    garden: true,
-    furnished: false,
-    agentName: 'Emma Brooks',
-  },
-  {
-    id: 6,
-    title: 'Luxury 2 Bed Flat with Gym and Balcony in Battersea',
+    title: "Luxury 2 Bed Flat with Gym and Balcony in Battersea",
     price: 595000,
     bedrooms: 2,
     bathrooms: 2,
-    propertyType: 'flat',
-    location: 'Battersea',
-    description: 'Premium two-bedroom flat with gym, balcony and strong local amenities in Battersea.',
-    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&h=800&fit=crop',
+    propertyType: "flat",
+    location: "Battersea",
+    description:
+      "Premium two-bedroom flat with gym, balcony and strong local amenities.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&h=800&fit=crop",
     gym: true,
     tube: true,
     fireplace: false,
@@ -113,117 +113,42 @@ const properties = [
     parking: false,
     garden: false,
     furnished: true,
-    agentName: 'Isla Bennett',
+    agentName: "Isla Bennett",
   },
-  {
-    id: 7,
-    title: 'Furnished 1 Bed Flat with Balcony in South Bank',
-    price: 455000,
-    bedrooms: 1,
-    bathrooms: 1,
-    propertyType: 'flat',
-    location: 'South Bank',
-    description: 'Smart furnished flat with a balcony and quick access to central London connections.',
-    imageUrl: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&h=800&fit=crop',
-    gym: true,
-    tube: true,
-    fireplace: false,
-    balcony: true,
-    parking: false,
-    garden: false,
-    furnished: true,
-    agentName: 'Nina Patel',
-  },
-  {
-    id: 8,
-    title: 'Classic 2 Bed Flat with Fireplace and Balcony in Marylebone',
-    price: 625000,
-    bedrooms: 2,
-    bathrooms: 2,
-    propertyType: 'flat',
-    location: 'Marylebone',
-    description: 'Elegant flat with period fireplace, balcony and excellent access to the West End.',
-    imageUrl: 'https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1200&h=800&fit=crop',
-    gym: false,
-    tube: true,
-    fireplace: true,
-    balcony: true,
-    parking: false,
-    garden: false,
-    furnished: false,
-    agentName: 'Freddie Green',
-  },
-  {
-    id: 9,
-    title: 'Bright 2 Bed Flat with Parking in Stratford',
-    price: 505000,
-    bedrooms: 2,
-    bathrooms: 2,
-    propertyType: 'flat',
-    location: 'Stratford',
-    description: 'Bright flat with secure parking, modern layout and strong transport for commuting.',
-    imageUrl: 'https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&h=800&fit=crop',
-    gym: false,
-    tube: true,
-    fireplace: false,
-    balcony: true,
-    parking: true,
-    garden: false,
-    furnished: true,
-    agentName: 'Leah Turner',
-  },
-  {
-    id: 10,
-    title: 'Fireplace 2 Bed House with Parking in Hampstead',
-    price: 595000,
-    bedrooms: 2,
-    bathrooms: 2,
-    propertyType: 'house',
-    location: 'Hampstead',
-    description: 'Characterful two-bedroom house with fireplace and parking in a desirable Hampstead setting.',
-    imageUrl: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop',
-    gym: false,
-    tube: true,
-    fireplace: true,
-    balcony: false,
-    parking: true,
-    garden: false,
-    furnished: false,
-    agentName: 'Thomas Lane',
-  },
-];
-
-const examplePrompts = [
-  '1 bed flat in Hyde Park under £600k',
-  '1 bed flat with gym near tube',
-  '2 bedroom property with a fireplace under £600k',
 ];
 
 const bookingSlots = [
-  'Tue 9 Apr · 10:00',
-  'Tue 9 Apr · 14:00',
-  'Wed 10 Apr · 11:00',
-  'Thu 11 Apr · 18:00',
+  "Tue 9 Apr · 10:00",
+  "Tue 9 Apr · 14:00",
+  "Wed 10 Apr · 11:00",
+  "Thu 11 Apr · 18:00",
 ];
 
 function normaliseText(input) {
   return input
     .toLowerCase()
-    .replace(/apartments?/g, 'flat')
-    .replace(/condos?/g, 'flat')
-    .replace(/metro/g, 'tube')
-    .replace(/subway/g, 'tube');
+    .replace(/apartments?/g, "flat")
+    .replace(/condos?/g, "flat")
+    .replace(/metro/g, "tube")
+    .replace(/subway/g, "tube");
 }
 
 function parsePrice(input) {
-  const cleaned = input.toLowerCase().replace(/,/g, '').replace('£', '').trim();
+  const cleaned = input
+    .toLowerCase()
+    .replace(/,/g, "")
+    .replace("£", "")
+    .trim();
+
   const match = cleaned.match(/^(\d+)(k|m)?$/);
+
   if (!match) return null;
 
   let value = Number(match[1]);
-  const suffix = match[2];
-  if (suffix === 'k') value *= 1000;
-  if (suffix === 'm') value *= 1000000;
+
+  if (match[2] === "k") value *= 1000;
+  if (match[2] === "m") value *= 1000000;
+
   return value;
 }
 
@@ -232,17 +157,22 @@ function parsePrompt(prompt) {
   const words = text.split(/\s+/).filter(Boolean);
 
   const bedroomsMatch = text.match(/(\d+)\s*bed(?:room)?/);
-  const bedrooms = bedroomsMatch ? Number(bedroomsMatch[1]) : null;
+
+  const bedrooms = bedroomsMatch
+    ? Number(bedroomsMatch[1])
+    : null;
 
   let maxPrice = null;
   let targetPrice = null;
 
-  for (let i = 0; i < words.length - 1; i += 1) {
-    if (words[i] === 'under') {
+  for (let i = 0; i < words.length - 1; i++) {
+    if (words[i] === "under") {
       maxPrice = parsePrice(words[i + 1]);
     }
-    if (words[i] === 'around') {
+
+    if (words[i] === "around") {
       targetPrice = parsePrice(words[i + 1]);
+
       if (targetPrice !== null) {
         maxPrice = Math.round(targetPrice * 1.1);
       }
@@ -250,24 +180,21 @@ function parsePrompt(prompt) {
   }
 
   const locationList = [
-    'canary wharf',
-    'notting hill',
-    'hyde park',
-    'south bank',
-    'marylebone',
-    'battersea',
-    'stratford',
-    'hampstead',
-    'richmond',
-    'clapham',
-    'westminster',
-    'london',
+    "canary wharf",
+    "notting hill",
+    "hyde park",
+    "battersea",
+    "westminster",
+    "london",
   ];
-  const location = locationList.find((loc) => text.includes(loc)) || null;
+
+  const location =
+    locationList.find((loc) => text.includes(loc)) || null;
 
   let propertyType = null;
-  if (text.includes('flat')) propertyType = 'flat';
-  if (text.includes('house')) propertyType = 'house';
+
+  if (text.includes("flat")) propertyType = "flat";
+  if (text.includes("house")) propertyType = "house";
 
   return {
     bedrooms,
@@ -275,13 +202,13 @@ function parsePrompt(prompt) {
     targetPrice,
     propertyType,
     features: {
-      gym: text.includes('gym'),
-      tube: text.includes('tube'),
-      fireplace: text.includes('fireplace'),
-      balcony: text.includes('balcony'),
-      parking: text.includes('parking'),
-      garden: text.includes('garden'),
-      furnished: text.includes('furnished'),
+      gym: text.includes("gym"),
+      tube: text.includes("tube"),
+      fireplace: text.includes("fireplace"),
+      balcony: text.includes("balcony"),
+      parking: text.includes("parking"),
+      garden: text.includes("garden"),
+      furnished: text.includes("furnished"),
     },
     location,
   };
@@ -289,6 +216,7 @@ function parsePrompt(prompt) {
 
 function rankProperties(prompt) {
   const criteria = parsePrompt(prompt);
+
   const hasCriteria =
     Object.values(criteria.features).some(Boolean) ||
     Boolean(
@@ -300,27 +228,40 @@ function rankProperties(prompt) {
 
   const results = properties
     .filter((property) => {
-      if (criteria.bedrooms !== null && property.bedrooms !== criteria.bedrooms) {
+      if (
+        criteria.bedrooms !== null &&
+        property.bedrooms !== criteria.bedrooms
+      ) {
         return false;
       }
 
-      if (criteria.maxPrice !== null && property.price > criteria.maxPrice) {
+      if (
+        criteria.maxPrice !== null &&
+        property.price > criteria.maxPrice
+      ) {
         return false;
       }
 
       if (
         criteria.location &&
         criteria.location !== "london" &&
-        !property.location.toLowerCase().includes(criteria.location)
+        !property.location
+          .toLowerCase()
+          .includes(criteria.location)
       ) {
         return false;
       }
 
-      if (criteria.propertyType && property.propertyType !== criteria.propertyType) {
+      if (
+        criteria.propertyType &&
+        property.propertyType !== criteria.propertyType
+      ) {
         return false;
       }
 
-      for (const [feature, required] of Object.entries(criteria.features)) {
+      for (const [feature, required] of Object.entries(
+        criteria.features
+      )) {
         if (required && !property[feature]) {
           return false;
         }
@@ -341,21 +282,36 @@ function rankProperties(prompt) {
         };
       }
 
-      if (criteria.bedrooms !== null && property.bedrooms === criteria.bedrooms) {
+      if (
+        criteria.bedrooms !== null &&
+        property.bedrooms === criteria.bedrooms
+      ) {
         score += 30;
-        reasons.push(`${property.bedrooms} bedrooms matches exactly`);
+        reasons.push(
+          `${property.bedrooms} bedrooms matches exactly`
+        );
       }
 
-      if (criteria.maxPrice !== null && property.price <= criteria.maxPrice) {
+      if (
+        criteria.maxPrice !== null &&
+        property.price <= criteria.maxPrice
+      ) {
         score += 25;
         reasons.push("Within budget");
 
-        // Better ranking when multiple properties are all within budget
         if (criteria.targetPrice !== null) {
           const distancePct =
-            (Math.abs(property.price - criteria.targetPrice) / criteria.targetPrice) * 100;
+            (Math.abs(
+              property.price - criteria.targetPrice
+            ) /
+              criteria.targetPrice) *
+            100;
 
-          const closenessBonus = Math.max(0, 5 - Math.round(distancePct));
+          const closenessBonus = Math.max(
+            0,
+            5 - Math.round(distancePct)
+          );
+
           score += closenessBonus;
 
           if (closenessBonus >= 2) {
@@ -363,9 +319,15 @@ function rankProperties(prompt) {
           }
         } else {
           const headroomPct =
-            ((criteria.maxPrice - property.price) / criteria.maxPrice) * 100;
+            ((criteria.maxPrice - property.price) /
+              criteria.maxPrice) *
+            100;
 
-          const budgetBonus = Math.max(0, Math.min(5, Math.round(headroomPct)));
+          const budgetBonus = Math.max(
+            0,
+            Math.min(5, Math.round(headroomPct))
+          );
+
           score += budgetBonus;
 
           if (budgetBonus >= 2) {
@@ -378,25 +340,39 @@ function rankProperties(prompt) {
         if (criteria.location === "london") {
           score += 10;
           reasons.push("In London");
-        } else if (property.location.toLowerCase().includes(criteria.location)) {
+        } else if (
+          property.location
+            .toLowerCase()
+            .includes(criteria.location)
+        ) {
           score += 20;
           reasons.push(`In ${property.location}`);
         }
       }
 
-      if (criteria.propertyType && property.propertyType === criteria.propertyType) {
+      if (
+        criteria.propertyType &&
+        property.propertyType === criteria.propertyType
+      ) {
         score += 10;
+
         reasons.push(
-          `${property.propertyType === "flat" ? "Flat" : "House"} matches requested type`
+          `${
+            property.propertyType === "flat"
+              ? "Flat"
+              : "House"
+          } matches requested type`
         );
       }
 
-      const requestedFeatures = Object.entries(criteria.features).filter(
-        ([, value]) => value
-      );
+      const requestedFeatures = Object.entries(
+        criteria.features
+      ).filter(([, value]) => value);
 
       const featureWeight =
-        requestedFeatures.length > 0 ? Math.floor(15 / requestedFeatures.length) : 0;
+        requestedFeatures.length > 0
+          ? Math.floor(15 / requestedFeatures.length)
+          : 0;
 
       requestedFeatures.forEach(([feature]) => {
         score += featureWeight;
@@ -417,7 +393,10 @@ function rankProperties(prompt) {
       return {
         ...property,
         score,
-        matchPercentage: Math.min(92, Math.max(62, score)),
+        matchPercentage: Math.min(
+          92,
+          Math.max(62, score)
+        ),
         reasons,
       };
     })
@@ -425,43 +404,76 @@ function rankProperties(prompt) {
 
   return results;
 }
+
 function formatPrice(value) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
     maximumFractionDigits: 0,
   }).format(value);
 }
 
-function PropertyCard({ property, onSelect }) {
+function PropertyCard({ property, onClick }) {
   return (
-    <button className="card property-card" onClick={onSelect}>
-      <div className="card-image-wrap">
-        <img src={property.imageUrl} alt={property.title} className="card-image" />
+    <div
+      onClick={onClick}
+      className="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-200 cursor-pointer hover:shadow-md transition"
+    >
+      <div className="aspect-[4/3] overflow-hidden">
+        <img
+          src={property.imageUrl}
+          alt={property.title}
+          className="w-full h-full object-cover"
+        />
       </div>
-      <div className="card-body">
-        <div className="card-header-row">
+
+      <div className="p-4 space-y-3">
+        <div className="flex justify-between items-start gap-3">
           <div>
-            <div className="card-price">{formatPrice(property.price)}</div>
-            <div className="muted">{property.bedrooms} bed {property.propertyType} · {property.location}</div>
+            <div className="text-lg font-semibold">
+              {formatPrice(property.price)}
+            </div>
+
+            <div className="text-sm text-gray-600">
+              {property.bedrooms} bed{" "}
+              {property.propertyType} ·{" "}
+              {property.location}
+            </div>
           </div>
-          <span className="badge">{property.matchPercentage}% match</span>
+
+          <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+            {property.matchPercentage}% match
+          </div>
         </div>
-        <div className="card-description">{property.description}</div>
+
+        <div className="text-sm text-gray-700 line-clamp-2">
+          {property.description}
+        </div>
       </div>
-    </button>
+    </div>
   );
 }
 
 export default function App() {
-  const [prompt, setPrompt] = useState('');
-  const [submittedPrompt, setSubmittedPrompt] = useState('');
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [submittedPrompt, setSubmittedPrompt] =
+    useState("");
+  const [selectedProperty, setSelectedProperty] =
+    useState(null);
+  const [selectedSlot, setSelectedSlot] =
+    useState(null);
+  const [bookingConfirmed, setBookingConfirmed] =
+    useState(false);
 
-  const results = useMemo(() => rankProperties(submittedPrompt), [submittedPrompt]);
-  const trending = useMemo(() => rankProperties('').slice(0, 6), []);
+  const results = useMemo(
+    () => rankProperties(submittedPrompt),
+    [submittedPrompt]
+  );
+
+  const trending = useMemo(
+    () => rankProperties("").slice(0, 4),
+    []
+  );
 
   const handleSearch = () => {
     setSubmittedPrompt(prompt.trim());
@@ -470,164 +482,255 @@ export default function App() {
     setBookingConfirmed(false);
   };
 
-  const activeList = submittedPrompt ? results : trending;
-
   return (
-    <div className="page">
-      <div className="container">
-        <header className="topbar">
+    <div className="min-h-screen bg-white text-gray-900">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:px-8">
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <div className="brand">🏠 Home Finder</div>
-            <p className="subtitle">Prompt-first property discovery prototype</p>
-          </div>
-          <span className="pill">UK property search demo</span>
-        </header>
+            <div className="flex items-center gap-2 text-xl font-semibold">
+              <Home className="h-5 w-5" />
+              Home Finder
+            </div>
 
-        <main className="layout">
-          <section className="left-column">
-            <div className="card hero-card">
-              <h1>Describe the home you want</h1>
-              <p className="muted">Type naturally. The prototype extracts key criteria and ranks only relevant listings.</p>
-              <div className="search-row">
-                <input
-                  value={prompt}
-                  onChange={(event) => setPrompt(event.target.value)}
-                  placeholder="Try: 1 bed flat in Westminster under £500k"
-                  className="search-input"
-                />
-                <button className="primary-button" onClick={handleSearch}>Search</button>
+            <p className="text-sm text-gray-600 mt-1">
+              Prompt-first property discovery prototype
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-8">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6">
+              <h1 className="text-3xl font-semibold leading-tight">
+                Describe the home you want
+              </h1>
+
+              <p className="text-sm text-gray-600 mt-2">
+                Type naturally. The prototype extracts
+                key criteria and ranks relevant listings.
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-3 mt-5">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+
+                  <input
+                    value={prompt}
+                    onChange={(e) =>
+                      setPrompt(e.target.value)
+                    }
+                    placeholder="Try: 1 bed flat in Westminster under £500k"
+                    className="w-full h-12 rounded-2xl border border-gray-300 pl-10 pr-4 outline-none"
+                  />
+                </div>
+
+                <button
+                  onClick={handleSearch}
+                  className="h-12 px-6 rounded-2xl bg-black text-white"
+                >
+                  Search
+                </button>
               </div>
-              <div className="chip-row">
-                {examplePrompts.map((item) => (
-                  <button
-                    key={item}
-                    className="chip"
+            </div>
+
+            <section className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold">
+                  {submittedPrompt
+                    ? "Search results"
+                    : "Trending properties"}
+                </h2>
+
+                {submittedPrompt ? (
+                  <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                    {results.length}{" "}
+                    {results.length === 1
+                      ? "result"
+                      : "results"}
+                  </div>
+                ) : null}
+              </div>
+
+              {submittedPrompt &&
+              results.length === 0 ? (
+                <div className="bg-white rounded-3xl border border-gray-200 shadow-sm p-6 text-sm text-gray-600">
+                  No exact matches found. Try increasing
+                  your budget or removing a feature.
+                </div>
+              ) : null}
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {(submittedPrompt
+                  ? results
+                  : trending
+                ).map((property) => (
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
                     onClick={() => {
-                      setPrompt(item);
-                      setSubmittedPrompt(item);
-                      setSelectedProperty(null);
+                      setSelectedProperty(property);
                       setSelectedSlot(null);
                       setBookingConfirmed(false);
                     }}
-                  >
-                    {item}
-                  </button>
+                  />
                 ))}
               </div>
-            </div>
+            </section>
+          </div>
 
-            <div className="section-head">
-              <h2>{submittedPrompt ? 'Search results' : 'Trending properties'}</h2>
-              {submittedPrompt ? <span className="pill small">{results.length} results</span> : null}
-            </div>
-
-            {submittedPrompt && results.length === 0 ? (
-              <div className="card empty-state">No exact matches found. Try increasing your budget, removing a feature, or broadening the area.</div>
-            ) : null}
-
-            <div className="grid">
-              {activeList.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  onSelect={() => {
-                    setSelectedProperty(property);
-                    setSelectedSlot(null);
-                    setBookingConfirmed(false);
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-
-          <aside className="right-column">
-            <div className="card sticky-card">
+          <div>
+            <div className="sticky top-6 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
               {selectedProperty ? (
                 <>
-                  <img src={selectedProperty.imageUrl} alt={selectedProperty.title} className="detail-image" />
-                  <div className="detail-body">
-                    <div className="card-header-row">
-                      <div>
-                        <div className="detail-price">{formatPrice(selectedProperty.price)}</div>
-                        <div className="muted">{selectedProperty.title}</div>
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <img
+                      src={selectedProperty.imageUrl}
+                      alt={selectedProperty.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="p-6 space-y-5">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-start gap-3">
+                        <div>
+                          <div className="text-2xl font-semibold">
+                            {formatPrice(
+                              selectedProperty.price
+                            )}
+                          </div>
+
+                          <div className="text-sm text-gray-600">
+                            {selectedProperty.title}
+                          </div>
+                        </div>
+
+                        <div className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                          {
+                            selectedProperty.matchPercentage
+                          }
+                          % match
+                        </div>
                       </div>
-                      <span className="badge">{selectedProperty.matchPercentage}% match</span>
-                    </div>
 
-                    <div className="facts muted">
-                      <span>{selectedProperty.bedrooms} bed</span>
-                      <span>{selectedProperty.bathrooms} bath</span>
-                      <span>{selectedProperty.propertyType}</span>
-                      <span>{selectedProperty.location}</span>
-                    </div>
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-600">
+                        <span className="flex items-center gap-1">
+                          <BedDouble className="h-4 w-4" />
+                          {selectedProperty.bedrooms} bed
+                        </span>
 
-                    <div className="divider" />
+                        <span className="flex items-center gap-1">
+                          <Bath className="h-4 w-4" />
+                          {selectedProperty.bathrooms} bath
+                        </span>
 
-                    <div>
-                      <div className="section-label">Why this matches</div>
-                      <div className="chip-row">
-                        {selectedProperty.reasons.map((reason) => (
-                          <span className="chip static" key={reason}>{reason}</span>
-                        ))}
+                        <span className="flex items-center gap-1">
+                          <Building2 className="h-4 w-4" />
+                          {
+                            selectedProperty.propertyType
+                          }
+                        </span>
+
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {selectedProperty.location}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="divider" />
-
                     <div>
-                      <div className="section-label">Description</div>
-                      <p className="muted detail-copy">{selectedProperty.description}</p>
+                      <div className="text-sm font-semibold mb-2">
+                        Why this matches
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProperty.reasons.map(
+                          (reason) => (
+                            <div
+                              key={reason}
+                              className="bg-gray-100 px-3 py-1 rounded-full text-sm"
+                            >
+                              {reason}
+                            </div>
+                          )
+                        )}
+                      </div>
                     </div>
 
-                    <div className="divider" />
+                    <div>
+                      <div className="text-sm font-semibold mb-2">
+                        Description
+                      </div>
+
+                      <p className="text-sm leading-6 text-gray-600">
+                        {
+                          selectedProperty.description
+                        }
+                      </p>
+                    </div>
 
                     <div>
-                      <div className="section-label">Book a viewing</div>
-                      <div className="chip-row">
+                      <div className="flex items-center gap-2 text-sm font-semibold mb-3">
+                        <CalendarDays className="h-4 w-4" />
+                        Book a viewing
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
                         {bookingSlots.map((slot) => (
                           <button
                             key={slot}
-                            className={`chip ${selectedSlot === slot ? 'chip-active' : ''}`}
                             onClick={() => {
                               setSelectedSlot(slot);
                               setBookingConfirmed(false);
                             }}
+                            className={`px-4 py-2 rounded-full border ${
+                              selectedSlot === slot
+                                ? "bg-black text-white"
+                                : "bg-white"
+                            }`}
                           >
                             {slot}
                           </button>
                         ))}
                       </div>
+
                       <button
-                        className="primary-button full"
                         disabled={!selectedSlot}
-                        onClick={() => setBookingConfirmed(true)}
+                        onClick={() =>
+                          setBookingConfirmed(true)
+                        }
+                        className="w-full mt-4 h-12 rounded-2xl bg-black text-white disabled:opacity-50"
                       >
-                        Confirm viewing with {selectedProperty.agentName}
+                        Confirm viewing with{" "}
+                        {selectedProperty.agentName}
                       </button>
+
                       {bookingConfirmed ? (
-                        <div className="success-box">Viewing confirmed for {selectedSlot} with {selectedProperty.agentName}.</div>
+                        <div className="mt-4 bg-green-50 text-green-700 rounded-2xl p-3 text-sm">
+                          Viewing confirmed for{" "}
+                          {selectedSlot} with{" "}
+                          {selectedProperty.agentName}.
+                        </div>
                       ) : null}
                     </div>
                   </div>
                 </>
               ) : (
-                <div className="placeholder-panel">
-                  <h3>Select a property</h3>
-                  <p className="muted">Click a card to view the property details, see why it matches the prompt and test the booking flow.</p>
-                  <div className="note-box">
-                    <strong>What this prototype proves</strong>
-                    <ul>
-                      <li>Natural-language prompt search can narrow down property options quickly</li>
-                      <li>Structured attributes make results more reliable</li>
-                      <li>AI-style ranking can help users focus on the top few listings</li>
-                      <li>A lightweight prototype is enough to demonstrate the concept publicly</li>
-                    </ul>
+                <div className="p-8">
+                  <div className="text-2xl font-semibold">
+                    Select a property
                   </div>
+
+                  <p className="text-sm text-gray-600 mt-4 leading-6">
+                    Click a property to view details,
+                    understand why it matches your
+                    search, and test the booking flow.
+                  </p>
                 </div>
               )}
             </div>
-          </aside>
-        </main>
+          </div>
+        </div>
       </div>
     </div>
   );
